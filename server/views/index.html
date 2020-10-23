@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <title>Hello world</title>
+   </head>
+   <body>
+       <H1>Hello world</H1>
+
+       <script src="https://cdn.jsdelivr.net/npm/socket.io-client@2/dist/socket.io.js"></script>
+       <!-- <script src = "/socket.io/socket.io.js"></script> -->
+       <script src = "http://localhost:4001/node_modules/socket.io-client/dist/socket.io.js"></script>
+       <!-- <script src = "../../node_modules/socket.io/node_modules/socket.io-client/dist/socket.io.js"></script> -->
+       <script>
+          var socket = io.connect('http://localhost:4001', { rejectUnauthorized: false });
+       </script>
+    </body>
+</html>
