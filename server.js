@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 require('dotenv').config()
 const helmet = require('helmet');
 const cors = require('cors');
-// const socketIo = require('socket.io');
+const socketIo = require('socket.io');
 const path = require('path')
 
 //import from inside modules
