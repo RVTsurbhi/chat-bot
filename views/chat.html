@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <!-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'sha256-BBJO2Ms9vZPmcoMMiCV11nYNe3MZc3F0/pBEFBu9TEc='"> -->
+    <title>Socket.io</title>
+</head>
+<body>
+    <h1>Communicating with socket .io!</h1>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // var socket = io();
+        var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmOGFmNzQ4ZTIzNTcyM2IyY2FmZWMzZCIsImVtYWlsIjoieHl6QGV4YW1wbGUuY29tIiwidXNlck5hbWUiOiJ4eXoiLCJpYXQiOjE2MDM1MzkyOTUsImV4cCI6MTYwMzU0Mjg5NX0.t2JnlgGE72rvx5u5Ny3KVTAbwXN3R-PULj7WmxlXw4k";
+        var socket = io.connect('http://localhost:4001', {
+            query: { token: token }
+        });
+        // var socket = io.connect('http://localhost:3000', {
+        //     query: { token: token }
+        // });
+
+        socket.on('connect', function () {
+            socket.on('authenticated', (data) => {
+                console.log('user authenticared', data)
+            })
+        });
+    </script>
+</body>
+
+</html>

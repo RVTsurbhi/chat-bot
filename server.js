@@ -3,13 +3,13 @@ const bodyParser = require('body-parser');
 require('dotenv').config()
 const helmet = require('helmet');
 const cors = require('cors');
-const socketIo = require('socket.io');
+// const socketIo = require('socket.io');
 const path = require('path')
 
 //import from inside modules
-const dbConnection = require('./server/settings/dbSetting');
-const errorHandler = require('./server/utils/errorHandler');
-const routes = require('./server/routers/apis');
+const dbConnection = require('./settings/dbSetting');
+const errorHandler = require('./utils/errorHandler');
+const routes = require('./routers/apis');
 
 const app = express()
 
@@ -24,10 +24,14 @@ app.use(bodyParser.json())
 //routes
 app.use('/api', routes);
 app.use(express.static(__dirname + 'public'));
-// app.use(express.static('public'));
+
 //views
 app.get('/', function (req, res) {
-    res.sendFile(__dirname + '/server/views/index.html');
+    res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/chat', function (req, res) {
+    res.sendFile(__dirname + '/views/chat.html');
 });
 
 // catch 404 and forward to error handler
@@ -40,15 +44,17 @@ app.use(function (req, res, next) {
 app.use(errorHandler)
 
 //create server
-var http = require('http');
+const http = require('http');
 const server = http.createServer(app);
 
-//socket server on top of http server
-const io = socketIo(server)
-// export io to use it in other file
-module.exports.io = io;
-require("./server/settings/socket")(io);
+const io = require('socket.io')(server);
 
-app.listen(process.env.PORT || 3001, ()=>
-    console.log(`Server is running on ${process.env.PORT}`)    
+//socket server on top of http server
+// export io to use it in other file
+// module.exports.io = io;
+require("./settings/socket")(io);
+
+server.listen(process.env.PORT || 3001, ()=>
+    console.log(`Server is running on port - ${process.env.PORT}`)    
 )
+

@@ -16,7 +16,6 @@ const responseHelper = require('../helpers/responses');
 /* api to create group */
 const createGroup = async(req, res, next)=>{
     try{
-        // console.log('req', req.user)
         let groupForm = await group.validateAsync(req.body)
         groupForm.members.push(req.user._id)
         if(groupForm.type === 'single'){
