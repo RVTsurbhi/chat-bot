@@ -22,6 +22,8 @@ const socketServer = (io)=>{
             if(err) return socket.emit('Error', { is_success: false, message: err, responseCode: 400 }) 
             console.log(2222);
             socket.decoded = decoded;
+            let token = socket.handshake.query.token
+            console.log("token", token)
             userModel.findOne({ token : token }).exec((err, sessionData)=>{
                 if(err){
                     console.log('error');
@@ -52,30 +54,40 @@ const socketServer = (io)=>{
 
           //create room for chat
           socket.on('createRoom', async (room) =>{
-            let groupForm = await group.validateAsync(room)
-            groupForm.members.push(socket.userId)
-            if(groupForm.type === 'single'){
-              let groupData = await groupModel.findOne(groupForm)
-              if(groupData){
-                  io.sockets.in(socket_id).emit("room-error", {message : "Chat with this User Already Exist"})
-                  socket.emit('authenticated', { is_success: false, message: 'Authentication failed.', responseCode: 401 })
-              }
-            }else {
+            try {
+              let groupForm = await group.validateAsync(room)
+              groupForm.members.push(socket.userId)
+              if(groupForm.type === 'single'){
+                let groupData = await groupModel.findOne(groupForm)
+                if(groupData){
+                    io.sockets.in(socket_id).emit("room-error", {message : "Chat with this User Already Exist"})
+                    socket.emit('authenticated', { is_success: false, message: 'Authentication failed.', responseCode: 401 })
+                }
+              }else {
                 if(!groupForm.name){
                     io.sockets.in(socket_id).emit("room-error", {message : "name is required for creating group."})
                 }
-            }
-            await new groupModel(groupForm).save()
+              }
+              await new groupModel(groupForm).save()
 
-            io.emit('createRoom', room);
+              io.emit('createRoom', room);  
+            } catch (error) {
+              socket.emit('Error', { is_success: false, message: error, responseCode: 400 })
+            }
+            
           });
           
           //sending message
           socket.on('message', async (msg) => {
-            let chatForm = await message.validateAsync(msg);
-            chatForm.from_user = socket.userId
-            await new chatModel(chatForm).save()
-            io.emit('message', msg);
+            try {
+              let chatForm = await message.validateAsync(msg);
+              chatForm.from_user = socket.userId
+              await new chatModel(chatForm).save()
+              io.emit('message', msg); 
+            } catch (error) {
+              console.log("Erro1-1", error.details[0].message)
+              socket.emit('Error', { is_success: false, message: error.details[0].message, responseCode: 400 })
+            }
           });
           
           //Whenever someone disconnects this piece of code executed
